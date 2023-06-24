@@ -1,12 +1,12 @@
 #include <mod/amlmod.h>
 #include <mod/logger.h>
 
-#include "icleo.h"
-ICLEO* cleo = nullptr;
+#include "cleo.h"
+cleo_ifs_t* cleo = nullptr;
 
-MYMOD(net.alexblade.rusjj.intops, CLEO IntOperations, 1.0, Alexander Blade & RusJJ)
+MYMOD(net.alexblade.rusjj.intops, CLEO IntOperations, 1.0.1, Alexander Blade & RusJJ)
 BEGIN_DEPLIST()
-    ADD_DEPENDENCY_VER(net.rusjj.cleolib, 2.0.1.1)
+    ADD_DEPENDENCY_VER(net.rusjj.cleolib, 2.0.1.3)
 END_DEPLIST()
 
 #define __print_to_log(__str)	cleo->PrintToCleoLog(__str); logger->Info(__str)
@@ -119,7 +119,7 @@ void intops__resi32(__handler_params)
 extern "C" void OnModLoad()
 {
     logger->SetTag("[CLEO] IntOperations");
-    if(!(cleo = (ICLEO*)GetInterface("CLEO")))
+    if(!(cleo = (cleo_ifs_t*)GetInterface("CLEO")))
     {
         logger->Error("CLEO is not installed!");
         return;
