@@ -4,7 +4,7 @@
 #include "cleo.h"
 cleo_ifs_t* cleo = nullptr;
 
-MYMOD(net.alexblade.rusjj.intops, CLEO IntOperations, 1.0.1, Alexander Blade & RusJJ)
+MYMOD(net.alexblade.rusjj.intops, CLEO IntOperations, 1.1, Alexander Blade & RusJJ)
 BEGIN_DEPLIST()
     ADD_DEPENDENCY_VER(net.rusjj.cleolib, 2.0.1.3)
 END_DEPLIST()
@@ -43,6 +43,7 @@ const uint16_t OP_INTOPS_INP_NOT = 0x0B1A;			// 0B1A=1,~ %1d%
 const uint16_t OP_INTOPS_INP_MOD = 0x0B1B;			// 0B1B=2,%1d% %= %2d%				
 const uint16_t OP_INTOPS_INP_SHR = 0x0B1C;			// 0B1C=2,%1d% >>= %2d%			
 const uint16_t OP_INTOPS_INP_SHL = 0x0B1D;			// 0B1D=2,%1d% <<= %2d%			
+const uint16_t OP_INTOPS_SIGN_EX = 0x0B1E;			// 0B1E=2,sign_extend %1d% size %2d%
 
 const char *NAME_INTOPS_AND		= "Intops::And";	// 1000: "Intops::And" i32 _& i32 to resi32
 const char *NAME_INTOPS_OR		= "Intops::Or";		// 1000: "Intops::Or" i32 | i32 to resi32
@@ -58,6 +59,7 @@ const char *NAME_INTOPS_INP_NOT	= "Intops::~";		// 1000: "Intops::~" resi32
 const char *NAME_INTOPS_INP_MOD	= "Intops::%=";		// 1000: "Intops::%=" resi32 with i32
 const char *NAME_INTOPS_INP_SHR	= "Intops::>>=";	// 1000: "Intops::>>=" resi32 with i32
 const char *NAME_INTOPS_INP_SHL	= "Intops::<<=";	// 1000: "Intops::<<=" resi32 with i32
+const char *NAME_INTOPS_SIGN_EX	= "Intops::SignEx";	// 1000: "Intops::SignEx" resi32 with i32
 
 void fatal(const char *fmt, ...)
 {
@@ -116,6 +118,28 @@ void intops__resi32(__handler_params)
 	__if_func_verify_list();
 }
 
+void intops__signex(__handler_params)
+{
+	int *var = &cleo->GetPointerToScriptVar(handle)->i;
+	if (__op_name_match(INTOPS_SIGN_EX))
+	{
+		int size = cleo->ReadParam(handle)->i;
+		if(size <= 0 || size > 4)
+		{
+			__if_func_verify_list();
+			return;
+		}
+		size_t offset = size * 8 - 1; // bit offset of top most bit in source value
+		bool signBit = *var & (1 << offset);
+		if(signBit)
+		{
+			*var |= 0xFFFFFFFF << offset; // set all upper bits
+		}
+	} else
+		__fatal_unk_op_or_func();
+	__if_func_verify_list();
+}
+
 extern "C" void OnModLoad()
 {
     logger->SetTag("[CLEO] IntOperations");
@@ -144,6 +168,8 @@ extern "C" void OnModLoad()
 	__reg_op_func(INTOPS_INP_MOD, intops__resi32_i32);
 	__reg_op_func(INTOPS_INP_SHR, intops__resi32_i32);
 	__reg_op_func(INTOPS_INP_SHL, intops__resi32_i32);
+	
+	__reg_op_func(INTOPS_SIGN_EX, intops__signex);
 	
 	__print_to_log("IntOperations has been loaded!");
 }
