@@ -59,7 +59,7 @@ const char *NAME_INTOPS_INP_NOT	= "Intops::~";		// 1000: "Intops::~" resi32
 const char *NAME_INTOPS_INP_MOD	= "Intops::%=";		// 1000: "Intops::%=" resi32 with i32
 const char *NAME_INTOPS_INP_SHR	= "Intops::>>=";	// 1000: "Intops::>>=" resi32 with i32
 const char *NAME_INTOPS_INP_SHL	= "Intops::<<=";	// 1000: "Intops::<<=" resi32 with i32
-const char *NAME_INTOPS_SIGN_EX	= "Intops::SignEx";	// 1000: "Intops::SignEx" resi32 with i32
+const char *NAME_INTOPS_SIGN_EX	= "Intops::SignEx";	// 1000: "Intops::SignEx" i32 to i32
 
 void fatal(const char *fmt, ...)
 {
